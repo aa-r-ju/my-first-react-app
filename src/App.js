@@ -1,22 +1,52 @@
 import Note from './node'
+import { useState } from 'react'
+const App = (props) => {
+  const [notes, setNotes] = useState(props.notes)
+  const [newNote, setNewNote] = useState('') 
+  const [showAll, setShowAll] = useState(true)
 
-const App = ({ notes }) => {
+  const handleNoteChange = (event) => {
+    //console.log(event.target.value )
+    setNewNote(event.target.value)
+  }
+
+  const notesToShow = showAll
+  ? notes
+  : notes.filter(note => note.important === true)
+
+
+
+
+  const addNote = (event) => {
+    event.preventDefault()
+    const noteObject = {
+      content: newNote,
+      important: Math.random() < 0.5,
+      id: notes.length + 1,
+    }
+  
+    setNotes(notes.concat(noteObject))
+    setNewNote('')
+  } 
+
   return (
     <div>
       <h1>Notes</h1>
       <ul>
-        {notes.map(note => 
+        {notesToShow.map(note => 
           <Note key={note.id} note={note} />
         )}
       </ul>
+      <form onSubmit={addNote}>
+        <input value={newNote}
+                  onChange={handleNoteChange}
+                  />
+        <button type="submit">save</button>
+      </form>   
     </div>
   )
 }
+
+
 export default App
 
-// [          <Note key={note.id = 1} note={note} />,
-// <Note key={note.id = 2} note={note} />,
-//           <Note key={note.id = 3} note={note} />
-//         ],
-
-//[<li> html is easy<li/>, <li>Browser can execute only JavaScript<li/>, <li> GET and POST are the most important methods of HTTP protocol <li/> ]
