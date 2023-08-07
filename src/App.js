@@ -1,6 +1,7 @@
-import Note from './node'
+import Note from './note'
 import { useState , useEffect} from 'react'
 import axios from 'axios'
+import noteService from './services/note'
 
 const App = (props) => {
   const [notes, setNotes] = useState([])
@@ -10,10 +11,10 @@ const App = (props) => {
 
   useEffect(() => {
     console.log('effect')
-    axios
-      .get('/api/notes')
-      .then(response => {
+    noteService.getAll()
+    .then(response => {
         console.log('promise fulfilled')
+        console.log(response.data)
         setNotes(response.data)
       })
   }, [])
@@ -37,12 +38,17 @@ const App = (props) => {
     const noteObject = {
       content: newNote,
       important: Math.random() < 0.5,
-      id: notes.length + 1,
     }
-  
-    setNotes(notes.concat(noteObject))
+  noteService.create(noteObject).then(response => {
+    console.log(response.data)
+        setNotes(notes.concat(noteObject))
+
+   // setNotes(response.data)
+  })
+
+
     setNewNote('')
-  } 
+   } 
 
   return (
     <div>
@@ -55,7 +61,7 @@ const App = (props) => {
 
       <ul>
         {notesToShow.map(note => 
-          <Note key={note.id} note={note} />
+          <Note key={note._id} note={note} />
         )}
       </ul>
       <form onSubmit={addNote}>
